@@ -1,7 +1,10 @@
 import csv
 import sys
 
+
 from util import Node, StackFrontier, QueueFrontier
+
+file = "large"
 
 # Maps names to a set of corresponding person_ids
 names = {}
@@ -55,7 +58,7 @@ def load_data(directory):
 def main():
     if len(sys.argv) > 2:
         sys.exit("Usage: python degrees.py [directory]")
-    directory = sys.argv[1] if len(sys.argv) == 2 else "large"
+    directory = sys.argv[1] if len(sys.argv) == 2 else file 
 
     # Load data from files into memory
     print("Loading data...")
@@ -86,9 +89,67 @@ def main():
 
 def shortest_path(source, target):
 
-    
+    frontier = QueueFrontier()
+    frontier.add(Node(source,0,0))
+    explored_nodes = set()
+    explored_nodes.add(source)  
+    solution = None
 
-    raise NotImplementedError
+    while not frontier.empty():
+        actual_state = frontier.frontier[0]
+        frontier.remove()
+        paths = neighbors_for_person(actual_state.state)
+        paths = remove_duplicate_paths(paths)
+        paths = remove_explored_nodes(paths,explored_nodes)
+
+        for film,actor in paths:
+            explored_nodes.add(actor)
+            node = Node(actor,actual_state,film)
+            frontier.add(node)
+
+        for film,actor in paths:
+            if actor == target:
+                solution = Node(actor,actual_state,film)
+                frontier.frontier.clear()
+
+    return built_list(solution,source)
+
+def built_list(node,s):
+    
+    if node is None:
+        return None
+
+    list = []
+    actual_node = node
+
+    while actual_node.state is not s:
+        list.append((actual_node.action,actual_node.state))
+        actual_node = actual_node.parent
+
+    return list[::-1]
+
+
+def remove_duplicate_paths(links):
+    
+    visited = set() 
+    Output = set()
+
+    for a, b in links: 
+        if not b in visited: 
+            visited.add(b) 
+            Output.add((a, b))
+
+    return Output    
+
+
+def remove_explored_nodes(paths,explored_nodes):
+
+    nodes = set()
+    for film, actor in paths:
+        if actor not in explored_nodes:
+            nodes.add((film,actor))
+
+    return nodes
 
 
 def person_id_for_name(name):
