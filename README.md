@@ -1,4 +1,4 @@
-***My Learning projects about Artificial Intelligence***
+***My Projects about Artificial Intelligence***
 
 Here I put the projects and courses I make about the Artificial Intelligence. 
 
