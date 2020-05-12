@@ -1,3 +1,5 @@
-*My Learning projects about ML and AI*
+***My Learning projects about Artificial Intelligence***
 
-In this repository  I will put the projects I make about the AI and ML topics. 
+Here I put the projects and courses I make about the Artificial Intelligence. 
+More specifically about Machine Learning. 
+
