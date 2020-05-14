@@ -1,11 +1,11 @@
-import csv
+import pandas as pd
 import sys
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import confusion_matrix
 
 TEST_SIZE = 0.4
-
 
 def main():
 
@@ -59,7 +59,18 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    
+    dataset = pd.read_csv(filename)
+    dataset = dataset.replace([True,False],[1,0])
+
+    evidence = dataset.loc[:, dataset.columns != 'Revenue']
+    evidence = evidence.replace(['Jan','Feb','Mar','Apr','May','June','Jul','Aug','Sep','Oct','Nov','Dec'],[1,2,3,4,5,6,7,8,9,10,11,12])
+    evidence = evidence.replace(['Returning_Visitor','New_Visitor','Other'],[1,0,0])
+    evidence = evidence.values.tolist()
+
+    labels = dataset['Revenue']
+
+    return (evidence,labels)
 
 
 def train_model(evidence, labels):
@@ -67,7 +78,9 @@ def train_model(evidence, labels):
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    raise NotImplementedError
+    model = KNeighborsClassifier(n_neighbors=1)
+    model.fit(evidence,labels)
+    return model
 
 
 def evaluate(labels, predictions):
@@ -85,7 +98,19 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
+    
+    cm = confusion_matrix(labels,predictions)
+
+    total=sum(sum(cm))
+
+    #####from confusion matrix calculate accuracy
+    accuracy =(cm [0,0]+cm [1,1])/total
+
+    specificity = cm[0,0]/(cm[0,0]+cm[0,1])
+    sensitivity = cm[1,1]/(cm[1,0]+cm[1,1])
+    
+
+    return (sensitivity,specificity)
 
 
 if __name__ == "__main__":
